@@ -11,16 +11,20 @@ if (NOT @BUILD_SHARED_LIBS@)
     find_dependency(tsl-robin-map)
 
     if ("arm64" IN_LIST ARCHITECTURE)
-        find_dependency(oaknut)
+        find_dependency(oaknut 2.0.1)
+    endif()
+
+    if ("riscv" IN_LIST ARCHITECTURE)
+        find_dependency(biscuit 0.9.1)
     endif()
 
     if ("x86_64" IN_LIST ARCHITECTURE)
-        find_dependency(xbyak 6)
+        find_dependency(xbyak 7)
         find_dependency(Zydis 4)
     endif()
 
     if (@DYNARMIC_USE_LLVM@)
-        find_dependency(LLVM CONFIG)
+        find_dependency(LLVM)
     endif()
 endif()
 

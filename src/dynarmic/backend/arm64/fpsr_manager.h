@@ -8,10 +8,8 @@
 #include <mcl/stdint.hpp>
 
 namespace oaknut {
-struct PointerCodeGeneratorPolicy;
-template<typename>
-class BasicCodeGenerator;
-using CodeGenerator = BasicCodeGenerator<PointerCodeGeneratorPolicy>;
+struct CodeGenerator;
+struct WReg;
 }  // namespace oaknut
 
 namespace Dynarmic::Backend::Arm64 {
@@ -23,6 +21,8 @@ public:
     void Spill();
     void Load();
     void Overwrite() { fpsr_loaded = false; }
+
+    void GetFpsr(oaknut::WReg);
 
 private:
     oaknut::CodeGenerator& code;

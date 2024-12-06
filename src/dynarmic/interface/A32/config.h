@@ -65,6 +65,12 @@ struct UserCallbacks : public TranslateCallbacks {
     // Memory must be interpreted as little endian.
     std::optional<std::uint32_t> MemoryReadCode(VAddr vaddr) override { return MemoryRead32(vaddr); }
 
+    // This function is called before the instruction at pc is read.
+    // IR code can be emitted by the callee prior to instruction handling.
+    // By returning true the callee precludes the translation of the instruction;
+    // in such case the callee is responsible for setting the terminal.
+    bool PreCodeReadHook(bool /*is_thumb*/, VAddr /*pc*/, A32::IREmitter& /*ir*/) override { return true; }
+
     // Thus function is called before the instruction at pc is interpreted.
     // IR code can be emitted by the callee prior to translation of the instruction.
     void PreCodeTranslationHook(bool /*is_thumb*/, VAddr /*pc*/, A32::IREmitter& /*ir*/) override {}
@@ -176,7 +182,7 @@ struct UserConfig {
     // This should point to the beginning of a 4GB address space which is in arranged just like
     // what you wish for emulated memory to be. If the host page faults on an address, the JIT
     // will fallback to calling the MemoryRead*/MemoryWrite* callbacks.
-    void* fastmem_pointer = nullptr;
+    std::optional<uintptr_t> fastmem_pointer = std::nullopt;
     /// Determines if instructions that pagefault should cause recompilation of that block
     /// with fastmem disabled.
     /// Recompiled code will use the page_table if this is available, otherwise memory
